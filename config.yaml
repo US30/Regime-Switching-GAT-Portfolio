@@ -1,6 +1,6 @@
 # config.yaml
 data:
-  ticker: "SPY"
+  ticker: "AAPL"
   start_date: "2015-01-01"
   end_date: "2023-12-31"
 

@@ -1,47 +1,42 @@
 import matplotlib.pyplot as plt
 import yaml
-from src.data_loader import fetch_and_process
+import torch
+from src.data_loader import fetch_and_process, fetch_portfolio_data
 from src.regime import get_regime_states
+from src.graph import build_graph_from_correlations, plot_graph
 
 # Load config
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
-def plot_regimes(df, ticker):
-    """
-    Visualizes the market regimes.
-    """
-    plt.figure(figsize=(12, 6))
-    
-    colors = ['green', 'orange', 'red']
-    labels = ['Low Vol (Bull)', 'Medium Vol', 'High Vol (Bear)']
-    
-    for regime in range(3):
-        mask = df['regime'] == regime
-        plt.scatter(df.index[mask], df['price'][mask], 
-                   s=10, c=colors[regime], label=labels[regime], alpha=0.6)
-    
-    plt.title(f"{ticker} Regime Detection (Green=Safe, Red=Crash)", fontsize=14)
-    plt.ylabel("Price")
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
 if __name__ == "__main__":
-    # 1. Fetch Data
-    ticker = config['data']['ticker']
-    start = config['data']['start_date']
-    end = config['data']['end_date']
+    # --- Step 1: Detect Global Regimes (using SPY) ---
+    print("\n--- Step 1: Market Regime Detection ---")
+    spy_df = fetch_and_process(config['data']['ticker'], config['data']['start_date'], config['data']['end_date'])
+    spy_df, _ = get_regime_states(spy_df)
     
-    df = fetch_and_process(ticker, start, end)
+    # Identify the "Crash" periods (Regime 2)
+    crash_dates = spy_df[spy_df['regime'] == 2].index
+    print(f"Identified {len(crash_dates)} days classified as 'High Volatility/Crash'.")
+
+    # --- Step 2: Build Portfolio Graph ---
+    print("\n--- Step 2: Building Asset Graph ---")
+    # Let's define a small portfolio of Tech + Defense + Retail
+    tickers = ['AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'JPM', 'XOM', 'GLD']
     
-    # 2. Detect Regimes
-    df_regime = get_regime_states(df, n_components=config['regime_model']['n_components'])
+    portfolio_returns = fetch_portfolio_data(tickers, config['data']['start_date'], config['data']['end_date'])
     
-    # 3. Print Stats
-    print("\n--- Regime Statistics ---")
-    print(df_regime.groupby('regime')[['log_ret', 'volatility']].mean())
+    # Filter portfolio data to ONLY look at the "Crash" days
+    # We intersect the portfolio dates with the crash dates
+    crash_returns = portfolio_returns.loc[portfolio_returns.index.intersection(crash_dates)]
     
-    # 4. Plot
-    plot_regimes(df_regime, ticker)
+    print(f"Building Graph based on {len(crash_returns)} crash days...")
+    
+    # Build Graph with a high correlation threshold
+    # In a crash, correlations usually spike.
+    data_obj, G = build_graph_from_correlations(crash_returns, threshold=0.6)
+    
+    print(f"Graph Created: {data_obj.num_nodes} Nodes, {data_obj.num_edges} Edges.")
+    
+    # --- Step 3: Visualize ---
+    plot_graph(G, title="Asset Correlations during 'Crash' Regimes (Regime 2)")

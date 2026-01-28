@@ -46,3 +46,27 @@ def fetch_and_process(ticker, start, end):
     df.dropna(inplace=True)
     
     return df
+def fetch_portfolio_data(tickers, start, end):
+    """
+    Fetches Adj Close prices for multiple tickers and returns a DataFrame of Log Returns.
+    """
+    print(f"Downloading Portfolio: {tickers}...")
+    
+    # auto_adjust=True ensures we get the Split/Div adjusted price as 'Close'
+    data = yf.download(tickers, start=start, end=end, progress=False, auto_adjust=True)
+    
+    if data.empty:
+        raise ValueError("No data fetched. Check tickers or internet.")
+
+    # yfinance returns a MultiIndex (Price, Ticker). We just want 'Close'.
+    if 'Close' in data.columns.levels[0]:
+        prices = data['Close']
+    else:
+        # Fallback for different yfinance versions
+        prices = data.iloc[:, :len(tickers)]
+    
+    # Calculate Log Returns for all stocks
+    # log(Pt / Pt-1)
+    returns = np.log(prices / prices.shift(1)).dropna()
+    
+    return returns
