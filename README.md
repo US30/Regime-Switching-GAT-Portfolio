@@ -27,7 +27,7 @@ The equity curve demonstrates the GAT-based strategy (Blue) significantly decoup
 
 ## 📉 2. Market Regime Detection
 
-![Regime Analysis](assets/Figure_4.png)
+![Regime Analysis](assets/Figure_1.png)
 
 ### 💡 Inference
 The Hidden Markov Model (HMM) successfully segments the time series into distinct latent states:
@@ -39,7 +39,7 @@ The Hidden Markov Model (HMM) successfully segments the time series into distinc
 
 ## 🕸️ 3. Asset Correlation Graph
 
-![Graph Structure](assets/Figure_1.png)
+![Graph Structure](assets/Figure_2.png)
 
 ### 💡 Inference
 The GAT constructs a graph where:
@@ -51,7 +51,7 @@ The GAT constructs a graph where:
 
 ## 📉 4. Agent Training Convergence
 
-![Training Loss](assets/Figure_2.png)
+![Training Loss](assets/Figure_4.png)
 
 ### 💡 Inference
 The training loss curve shows the optimization of the Negative Sharpe Ratio.
