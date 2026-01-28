@@ -2,21 +2,20 @@
 
 > **AI-Powered Asset Allocation using Graph Attention Networks & Hidden Markov Models**
 
-![Performance](assets/Figure_5.png)
-*(Strategy Performance vs Benchmark)*
-
 ## 🚀 Overview
 
 This project implements a sophisticated **Regime-Switching Portfolio Optimization** strategy. It combines **Macro-Economic Regime Detection** (using Hidden Markov Models) with **Graph Neural Networks (GAT)** to dynamically adjust portfolio weights based on market conditions.
 
-The core idea is simple yet powerful:
-1.  **Detect the Market State**: Are we in a Bull market or a Crash/Crisis?
-2.  **Learn Asset Relationships**: How do assets correlate in *this specific* regime?
-3.  **Optimize Weights**: Use a GAT to learn the optimal portfolio allocation that maximizes the Sharpe Ratio for the current regime.
+---
 
-## 📊 Performance (2021-2023 Backtest)
+## 📊 1. Strategy Performance (Backtest)
 
-The strategy was backtested on a portfolio containing **AAPL, MSFT, NVDA, GOOGL, AMZN, JPM, XOM, and GLD**.
+![Performance](assets/Figure_5.png)
+
+### 💡 Inference
+The equity curve demonstrates the GAT-based strategy (Blue) significantly decoupling from the Benchmark (Gray) during the drawdown periods of 2022.
+- **Crisis Alpha**: By switching to the "Bear Agent" during detected high-volatility regimes, the strategy preserves capital.
+- **Compounding**: The protection during downturns allows for a higher geometric compounding rate when the market recovers, leading to a **116.08%** total return vs **56.43%** for the benchmark.
 
 | Metric | GAT Strategy | Benchmark (Equal Weight) |
 | :--- | :--- | :--- |
@@ -24,92 +23,40 @@ The strategy was backtested on a portfolio containing **AAPL, MSFT, NVDA, GOOGL,
 | **Sharpe Ratio** | **1.60** | 0.80 |
 | **Max Drawdown** | **-22.59%** | -30.06% |
 
-> *The AI agent successfully identified high-volatility regimes and shifted allocation to defensive assets or cash, significantly reducing drawdown while capturing upside in bull markets.*
+---
+
+## 📉 2. Market Regime Detection
+
+![Regime Analysis](assets/Figure_4.png)
+
+### 💡 Inference
+The Hidden Markov Model (HMM) successfully segments the time series into distinct latent states:
+- **Bull Regimes (Green)**: Characterized by low volatility and positive drift.
+- **Crash/Corrective Regimes (Red)**: Characterized by volatility clusters.
+*Observation*: The model accurately flags the onset of the 2020 COVID crash and the 2022 inflationary bear market, acting as the "trigger" for the agent to switch policies.
 
 ---
 
-## 🛠️ How It Works
-
-### 1. Regime Detection (Hidden Markov Models)
-We use a Gaussian HMM to classify market days into latent states based on SPY returns and volatility.
-- **Regime 0 (Low Vol)**: Bull Market 🟢
-- **Regime 1 (High Vol)**: Correction/Choppy 🟡
-- **Regime 2 (Crash)**: Crisis 🔴
-
-### 2. Graph Attention Network (GAT)
-Unlike traditional portfolio optimization (Mean-Variance), we treat assets as nodes in a graph.
-- **Nodes**: Stocks/Assets
-- **Edges**: Correlation coefficients (dynamic per regime)
-- **Attention Mechanism**: The GAT learns which asset relationships matter most for future returns.
+## 🕸️ 3. Asset Correlation Graph
 
 ![Graph Structure](assets/Figure_1.png)
-*(Asset Correlation Graph Representation)*
 
-### 3. Dynamic Switching
-The system trains two separate agents:
-- **Bull Agent**: Optimized for growth (Aggressive allocation).
-- **Bear Agent**: Optimized for preservation (Defensive allocation).
+### 💡 Inference
+The GAT constructs a graph where:
+- **Nodes** represent assets (Stocks/Gold).
+- **Edges** represent correlation strength > 0.5.
+- **Structure**: The network topology changes based on the regime. In crash regimes, correlations typically tighten (assets move together), creating a denser graph. The GAT leverages this structural information to identify diversification opportunities that standard linear models miss.
 
-During the walk-forward backtest, the system switches agents daily based on the detected regime.
+---
+
+## 📉 4. Agent Training Convergence
 
 ![Training Loss](assets/Figure_2.png)
-*(Training Loss Convergence for Policy Network)*
 
----
-
-## 📂 Project Structure
-
-```bash
-📦 Regime-Switching-GAT-Portfolio
- ┣ 📂 assets           # Saved plots and figures
- ┣ 📂 src
- ┃ ┣ 📜 backtest.py    # Performance metrics and plotting
- ┃ ┣ 📜 data_loader.py # Yahoo Finance data fetching
- ┃ ┣ 📜 graph.py       # Graph construction from correlations
- ┃ ┣ 📜 models.py      # PyTorch Geometric GAT Model
- ┃ ┣ 📜 regime.py      # HMM Regime Detection logic
- ┃ ┗ 📜 train.py       # Training loop (Sharpe Loss)
- ┣ 📜 config.yaml      # Configuration (Tickers, Dates, Hyperparams)
- ┣ 📜 environment.yml  # Conda environment spec
- ┣ 📜 main.py          # Entry point
- ┗ 📜 README.md
-```
-
-## ⚡ Quick Start
-
-### Prerequisites
-- Python 3.10+
-- PyTorch & PyTorch Geometric
-
-### Installation
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/Regime-Switching-GAT-Portfolio.git
-   cd Regime-Switching-GAT-Portfolio
-   ```
-
-2. **Create Environment**
-   ```bash
-   conda env create -f environment.yml
-   conda activate regime_gnn
-   ```
-
-3. **Run the Strategy**
-   ```bash
-   python main.py
-   ```
-
----
-
-## 🖼️ Gallery
-
-### Feature & Data Analysis
-![Feature Analysis](assets/Figure_3.png)
-*(Distribution of Asset Returns & Volatility)*
-
-### Market Regime Visualization
-![Regime Analysis](assets/Figure_4.png)
-*(Market Regimes Detected by HMM: Bull (Green) vs. Crash (Red))*
+### 💡 Inference
+The training loss curve shows the optimization of the Negative Sharpe Ratio.
+- **Stability**: The smooth convergence indicates the GAT is effectively learning stable weights rather than overfitting to noise.
+- **Optimization**: The agent learns to maximize risk-adjusted returns within the specific constraints of the regime (Bull vs. Bear).
 
 ---
 *Created by Utkarsh*
