@@ -1,6 +1,18 @@
-# config.yaml
 data:
-  ticker: "AAPL"
+  # Use SPY to detect the broad market regime (Bull/Bear)
+  market_ticker: "SPY"
+  
+  # The actual assets you want to trade/graph
+  portfolio_tickers:
+    - "AAPL"
+    - "MSFT"
+    - "NVDA"
+    - "GOOGL"
+    - "AMZN"
+    - "JPM"
+    - "XOM"
+    - "GLD"
+  
   start_date: "2015-01-01"
   end_date: "2023-12-31"
 

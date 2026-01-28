@@ -16,11 +16,11 @@ dependencies:
   - seaborn
   - pandas-ta
   - quantstats
-  - yfinance
   - hmmlearn
   - tqdm
   - pyyaml
   - pip
   - pip:
     - vectorbt>=0.25.0
+    - yfinance>=1.1.0
     
