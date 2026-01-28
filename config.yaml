@@ -1,0 +1,14 @@
+# config.yaml
+data:
+  ticker: "SPY"
+  start_date: "2015-01-01"
+  end_date: "2023-12-31"
+
+regime_model:
+  n_components: 3
+  covariance_type: "full"
+
+model:
+  learning_rate: 0.001
+  hidden_channels: 64
+  dropout: 0.2

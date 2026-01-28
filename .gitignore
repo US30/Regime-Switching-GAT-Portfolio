@@ -1,0 +1,17 @@
+# Python & Conda
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+venv/
+env/
+
+# Data (Never commit large financial data)
+data/
+*.csv
+*.h5
+*.pkl
+
+# IDEs
+.vscode/
+.idea/

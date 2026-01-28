@@ -1,0 +1,26 @@
+name: regime_gnn
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch=2.4.1
+  - torchvision=0.19.1
+  - torchaudio=2.4.1
+  - torch-geometric
+  - scikit-learn
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - pandas-ta
+  - quantstats
+  - yfinance
+  - hmmlearn
+  - tqdm
+  - pyyaml
+  - pip
+  - pip:
+    - vectorbt>=0.25.0
+    
