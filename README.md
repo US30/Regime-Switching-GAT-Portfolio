@@ -1,14 +1,14 @@
-# 🧠 Regime-Switching GAT Portfolio Manager
+# Regime-Switching GAT Portfolio Manager
 
 > **AI-Powered Asset Allocation using Graph Attention Networks & Hidden Markov Models**
 
-## 🚀 Overview
+## Overview
 
 This project implements a sophisticated **Regime-Switching Portfolio Optimization** strategy. It combines **Macro-Economic Regime Detection** (using Hidden Markov Models) with **Graph Neural Networks (GAT)** to dynamically adjust portfolio weights based on market conditions.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 The project workflow is divided into the following key notebooks:
 
@@ -20,7 +20,7 @@ The project workflow is divided into the following key notebooks:
 
 ---
 
-## 🧮 Mathematical Framework
+## Mathematical Framework
 
 The strategy leverages a hierarchical model combining probabilistic regime detection with geometric deep learning.
 
@@ -72,11 +72,11 @@ $$
 
 ---
 
-## 📊 Strategy Performance (Backtest)
+## Strategy Performance (Backtest)
 
 ![Performance](assets/Figure_5.png)
 
-### 💡 Inference
+### Inference
 The equity curve demonstrates the GAT-based strategy (Blue) significantly decoupling from the Benchmark (Gray).
 - **Crisis Alpha**: By switching to the "Bear Agent" during detected high-volatility regimes, the strategy preserves capital.
 - **Compounding**: The protection during downturns allows for a higher geometric compounding rate.
@@ -89,7 +89,7 @@ The equity curve demonstrates the GAT-based strategy (Blue) significantly decoup
 
 ---
 
-## 📉 Market Regime & Graph Analysis
+## Market Regime & Graph Analysis
 
 ![Regime Analysis](assets/Figure_1.png)
 *Figure 1: HMM detects high-volatility "Crash" regimes (Red) vs. stable "Bull" regimes (Green).*
@@ -98,4 +98,79 @@ The equity curve demonstrates the GAT-based strategy (Blue) significantly decoup
 *Figure 2: Asset correlation graph topology changes per regime, allowing the GAT to learn different message-passing dynamics for stress periods.*
 
 ---
-<!-- *Maintained by Antigravity* -->
+
+## Detailed Analysis: Correlation & Graph Topology
+
+### Static Correlation Matrix (Baseline)
+
+![Static Correlation Matrix](assets/figure_6.png)
+*Figure 6: Static correlation matrix computed over the entire dataset. This baseline view shows the average relationships between assets without regime conditioning. Notice that GLD (Gold) exhibits low or negative correlations with most tech stocks, serving as a natural hedge. Traditional tech stocks (AAPL, AMZN, GOOGL, MSFT, NVDA) show strong positive correlations (0.5-0.7), forming a densely connected cluster.*
+
+**Key Observations:**
+- **Tech Cluster**: AAPL, AMZN, GOOGL, MSFT, and NVDA demonstrate high inter-correlations (>0.5), indicating synchronized movements
+- **Diversification Asset**: GLD shows near-zero or negative correlations with most equities, making it an effective portfolio stabilizer
+- **JPM Behavior**: JPM (financials) exhibits moderate correlations with tech stocks, bridging the equity-defensive asset divide
+
+---
+
+### Regime-Conditional Graph Structures
+
+![Graph Topology Comparison](assets/figure_7.png)
+*Figure 7: Side-by-side comparison of graph structures in Bull (Regime 0) vs. Crash (Regime 2) markets. The correlation threshold is set at 0.4 to determine edge connectivity. The dramatic shift in topology enables the GAT to learn regime-specific message-passing patterns.*
+
+**Structural Insights:**
+- **Bull Market (Left)**: Sparse connectivity with isolated clusters. Assets maintain independence, allowing for diversification benefits
+- **Crash Market (Right)**: Dense, fully-connected graph structure. During market stress, correlations surge toward +1 (contagion effect), creating a highly interconnected network
+- **GAT Advantage**: The attention mechanism can dynamically weight edges differently in each regime, learning that diversification works in bull markets but defensive positioning is crucial during crashes
+
+---
+
+## Portfolio Allocation Dynamics
+
+### Regime-Switching Asset Weights
+
+![Regime-Switching Allocation](assets/figure_8.png)
+*Figure 8: Time-series visualization of portfolio weights with regime-based agent switching. Green vertical bars indicate periods where the "Bull Agent" is active; pink bars show "Bear/Crash Agent" periods. The discrete regime switches create step-function changes in allocation strategy.*
+
+**Allocation Strategy:**
+- **Bull Regime (Green)**: Diversified equity exposure across AAPL, MSFT, NVDA, GOOGL with moderate allocations
+- **Bear Regime (Pink)**: Dramatic shift toward defensive assets (GLD increases significantly), with reduced equity exposure
+- **Regime Persistence**: The HMM captures multi-month regime durations, avoiding excessive trading from daily noise
+- **Crisis Response**: Sharp transitions during 2020 (COVID-19) and 2022 (inflation/rate hikes) demonstrate the model's ability to detect regime changes
+
+---
+
+### Dynamic GNN-Based Allocation
+
+![Dynamic GNN Allocation](assets/figure_9.png)
+*Figure 9: Continuous portfolio weight evolution using the GAT model with daily rebalancing. Unlike Figure 8's discrete regime switches, this shows the smooth, gradient-based adjustments the neural network makes in response to changing market conditions and graph structures.*
+
+**GNN Behavior:**
+- **Smooth Transitions**: The attention mechanism produces gradual weight adjustments rather than abrupt changes, reducing transaction costs
+- **Adaptive Concentration**: During stable periods, the model concentrates capital in high-momentum assets; during uncertainty, it spreads risk
+- **Feature-Driven**: Daily rebalancing responds to node features (returns, volatility, technical indicators) and edge weights (correlations)
+- **Temporal Patterns**: Visible "breathing" patterns where allocations expand and contract with market volatility cycles
+
+---
+
+## Benchmark Comparison
+
+### Strategy vs. SPY Buy-and-Hold
+
+![Strategy vs SPY](assets/figure_10.png)
+*Figure 10: Cumulative performance comparison between the GAT Regime-Switching Strategy (blue) and a simple SPY buy-and-hold benchmark (orange). The strategy achieves nearly 10x outperformance over the backtesting period (2015-2024).*
+
+**Performance Highlights:**
+- **Exponential Divergence**: The gap between strategies widens over time, demonstrating the power of compounding regime-aware returns
+- **Drawdown Protection**: During the 2020 crash and 2022 bear market, the GAT strategy exhibits shallower drawdowns than SPY, preserving capital for recovery
+- **Risk-Adjusted Superiority**: The strategy achieves higher absolute returns with lower volatility (Sharpe Ratio: 2.26 vs. SPY's ~1.0)
+- **Regime Alpha**: The majority of outperformance comes from defensive positioning during detected bear regimes, not from superior bull market returns
+
+| Metric | GAT Strategy | SPY Buy-and-Hold |
+|:-------|:-------------|:-----------------|
+| **Final Value** | ~$20 | ~$2.5 |
+| **CAGR** | ~37% | ~10% |
+| **Volatility** | Lower (regime-adjusted) | Higher (full equity exposure) |
+
+---
+
