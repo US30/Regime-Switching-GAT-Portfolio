@@ -65,7 +65,10 @@ The final node embeddings are passed through a Multi-Layer Perceptron (MLP) and 
 
 ### 4. Objective Function (Sharpe Loss)
 We train the agent using a custom loss function that directly maximizes the **Sharpe Ratio** of the portfolio returns $R_p = \mathbf{w}^T \mathbf{r}$:
-$$ \mathcal{L} = - \text{Sharpe} = - \frac{\mathbb{E}[R_p]}{\sqrt{\text{Var}(R_p) + \epsilon}} $$
+
+$$
+\mathcal{L} = - \text{Sharpe} = - \frac{\mathbb{E}[R_p]}{\sqrt{\text{Var}(R_p) + \epsilon}}
+$$
 
 ---
 
