@@ -1,6 +1,6 @@
 import torch
 import torch.optim as optim
-from src.loss import SharpeLoss
+from src.loss import MeanVarianceLoss
 
 def train_model(model, data_obj, returns_tensor, epochs=500, lr=0.01):
     """
